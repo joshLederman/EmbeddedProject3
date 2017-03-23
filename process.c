@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <fsl_device_registers.h>
 
-process_t *current_process = NULL;
+//Temp
+process_t * process_list = NULL;
+process_t * current_process = NULL;
 
 struct process_t {
 	unsigned int * sp;
@@ -19,4 +21,9 @@ void process_start (void) {
 }
 	
 unsigned int * process_select (unsigned int *cursp) {
-	
+	if (current_process == NULL) {
+		return NULL;
+	}
+	current_process = current_process->nextProcess;
+	return current_process->sp;
+}
