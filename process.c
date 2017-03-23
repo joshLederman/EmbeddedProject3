@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <fsl_device_registers.h>
 
-//Temp
 process_t * process_list = NULL;
 process_t * current_process = NULL;
 
