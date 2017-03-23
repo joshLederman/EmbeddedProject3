@@ -19,7 +19,7 @@ void append(struct process_state lastElement){
 			struct process_state *tmp;
 			//process_list - list of process_state
 			if (process_list == NULL) {
-				process_list = lastElement;
+				process_list = &lastElement;
 				lastElement.nextProcess = NULL;
 			}
 			else {
@@ -39,7 +39,7 @@ int process_create (void (*f)(void), int n) {
 			if (sp == NULL) return -1;
 			struct process_state *processState = malloc(sizeof(*processState));
 			processState->sp = sp;
-			append(processState);
+			append(*processState);
 			return 0;
 };
 
