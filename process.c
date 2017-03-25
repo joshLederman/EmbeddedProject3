@@ -69,6 +69,7 @@ unsigned int * process_select (unsigned int *cursp) {
 		if (current_process==NULL) {
 			//This is the first call to process_select
 			current_process=begin_queue;
+			begin_queue=NULL; //To ensure once all programs have terminated that current_process becomes NULL
 			return current_process->sp;
 		}
 		else {
