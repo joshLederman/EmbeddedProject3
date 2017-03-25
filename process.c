@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <fsl_device_registers.h>
 
-process_t * process_list = NULL;
-process_t * current_process = NULL;
 
 struct process_state {
 			unsigned int *sp;
 			struct process_state *nextProcess;
 }; 
+
+struct process_state * process_list = NULL;
+struct process_state * current_process = NULL;
 
 void append(struct process_state lastElement){
 			struct process_state *tmp;
@@ -40,7 +41,7 @@ int process_create (void (*f)(void), int n) {
 
 void process_start (void) {
 	
-	NVIC_EnableIRG(PIT0_IRQn); //Enables interrupts
+	NVIC_EnableIRQ(PIT0_IRQn); //Enables interrupts
 	
 	PIT_MCR = 1; //Enables standard timers
 	
