@@ -5,7 +5,6 @@
 process_t * process_list = NULL;
 process_t * current_process = NULL;
 
-//Temp
 struct process_state {
 			unsigned int *sp;
 			struct process_state *nextProcess;
@@ -39,8 +38,6 @@ int process_create (void (*f)(void), int n) {
 			return 0;
 };
 
-
-
 void process_start (void) {
 	
 	NVIC_EnableIRG(PIT0_IRQn); //Enables interrupts
@@ -51,9 +48,10 @@ void process_start (void) {
 }
 	
 unsigned int * process_select (unsigned int *cursp) {
-	if (current_process == NULL) {
+	if (cursp==NULL || current_process==NULL) {
 		return NULL;
 	}
-	current_process = current_process->nextProcess;
-	return current_process->sp;
+	current_process->sp=cursp;
+	cursp=&(current_process->nextProcess->sp);
+	return cursp;
 }
