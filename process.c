@@ -12,12 +12,12 @@ struct process_state {
 
 struct process_state * current_process = NULL;
 
-void append(struct process_state lastElement){
+void append(struct process_state * lastElement){
 			struct process_state *tmp;
 			//current_process - list of process_state
 			if (current_process == NULL) {
-				current_process = &lastElement;
-				lastElement.nextProcess = NULL;
+				current_process = lastElement;
+				lastElement->nextProcess = NULL;
 			}
 			else {
 				tmp = current_process;
@@ -26,8 +26,8 @@ void append(struct process_state lastElement){
 					tmp = tmp->nextProcess;
 				}
 				// now tmp is the last element in the list
-				tmp->nextProcess = &lastElement;
-				lastElement.nextProcess = NULL;
+				tmp->nextProcess = lastElement;
+				lastElement->nextProcess = NULL;
 			}
 }
 
@@ -48,7 +48,7 @@ int process_create (void (*f)(void), int n) {
 			processState->sp = sp;
 			processState->sp_original = sp;
 			processState->size=n;
-			append(*processState);
+			append(processState);
 			return 0;
 };
 
