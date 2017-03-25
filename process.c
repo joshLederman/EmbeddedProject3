@@ -51,7 +51,7 @@ unsigned int * process_select (unsigned int *cursp) {
 	if (cursp==NULL || current_process==NULL) {
 		return NULL;
 	}
-	current_process->sp=cursp;
-	cursp=&(current_process->nextProcess->sp);
+	current_process->sp=cursp; //Update sp for that process
+	cursp=&(current_process->nextProcess->sp); //Move sp to next process
 	return cursp;
 }
