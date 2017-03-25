@@ -86,12 +86,7 @@ unsigned int * process_select (unsigned int *cursp) {
 		//Remove the top process from the queue and add to end
 		struct process_state * switched_process = remove();
 		append(switched_process);
+		//Returns the new process sp
+		return current_process->sp;
 	}
-	if (cursp==NULL || current_process==NULL) {
-		return NULL;
-	}
-	current_process->sp
-=cursp; //Update sp for that process
-	cursp=current_process->nextProcess->sp; //Move sp to next process
-	return cursp;
 }
