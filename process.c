@@ -5,21 +5,22 @@
 
 struct process_state {
 			unsigned int *sp;
+			unsigned int *sp_original; //Original stack pointer
+			unsigned int size; //Size of stack as initialized
 			struct process_state *nextProcess;
 }; 
 
-struct process_state * process_list = NULL;
 struct process_state * current_process = NULL;
 
 void append(struct process_state lastElement){
 			struct process_state *tmp;
-			//process_list - list of process_state
-			if (process_list == NULL) {
-				process_list = &lastElement;
+			//current_process - list of process_state
+			if (current_process == NULL) {
+				current_process = &lastElement;
 				lastElement.nextProcess = NULL;
 			}
 			else {
-				tmp = process_list;
+				tmp = current_process;
 				while (tmp->nextProcess != NULL) {
 					// while there are more elements in the list
 					tmp = tmp->nextProcess;
@@ -30,11 +31,23 @@ void append(struct process_state lastElement){
 			}
 }
 
+//Removes first process of queue
+struct process_state* remove() {
+	//Creating new pointer to process at top of list
+	struct process_state * removed_process = current_process;
+	//Moving next process up, effectively removing top process
+	current_process = removed_process->nextProcess;
+	//Returning the pointer to the top process;
+	return removed_process;
+}
+
 int process_create (void (*f)(void), int n) {
 			unsigned int *sp = process_stack_init(*f, n);
 			if (sp == NULL) return -1;
 			struct process_state *processState = malloc(sizeof(*processState));
 			processState->sp = sp;
+			processState->sp_original = sp;
+			processState->size=n;
 			append(*processState);
 			return 0;
 };
@@ -49,10 +62,36 @@ void process_start (void) {
 }
 	
 unsigned int * process_select (unsigned int *cursp) {
+	if (cursp==NULL) {
+		if (current_process==NULL)
+			return NULL; //No processes are running
+		else {
+			//A process has just terminated
+			
+			//Remove the process from the queue
+			struct process_state * terminated_process = remove();
+			//Free the stack of the process
+			process_stack_free(terminated_process->sp_original, terminated_process->size);
+			//Free the struct holding the process
+			free(terminated_process);
+			//Return the next process
+			return current_process->sp;
+		}
+	}
+	else {
+		//Switching from one running process to another
+		
+		//Store the next sp
+		current_process->sp=cursp;
+		//Remove the top process from the queue and add to end
+		struct process_state * switched_process = remove();
+		append(switched_process);
+	}
 	if (cursp==NULL || current_process==NULL) {
 		return NULL;
 	}
-	current_process->sp=cursp; //Update sp for that process
+	current_process->sp
+=cursp; //Update sp for that process
 	cursp=current_process->nextProcess->sp; //Move sp to next process
 	return cursp;
 }
