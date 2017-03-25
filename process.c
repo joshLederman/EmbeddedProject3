@@ -11,16 +11,19 @@ struct process_state {
 }; 
 
 struct process_state * current_process = NULL;
+//The queue will be created with process_create in begin_queue
+//then switched to current_process during the first call to process_select
+struct process_state * begin_queue = NULL;
 
-void append(struct process_state * lastElement){
+void append(struct process_state * lastElement, struct process_state * list){
 			struct process_state *tmp;
 			//current_process - list of process_state
-			if (current_process == NULL) {
-				current_process = lastElement;
+			if (list == NULL) {
+				list = lastElement;
 				lastElement->nextProcess = NULL;
 			}
 			else {
-				tmp = current_process;
+				tmp = list;
 				while (tmp->nextProcess != NULL) {
 					// while there are more elements in the list
 					tmp = tmp->nextProcess;
@@ -48,7 +51,7 @@ int process_create (void (*f)(void), int n) {
 			processState->sp = sp;
 			processState->sp_original = sp;
 			processState->size=n;
-			append(processState);
+			append(processState, begin_queue);
 			return 0;
 };
 
@@ -63,8 +66,11 @@ void process_start (void) {
 	
 unsigned int * process_select (unsigned int *cursp) {
 	if (cursp==NULL) {
-		if (current_process==NULL)
-			return NULL; //No processes are running
+		if (current_process==NULL) {
+			//This is the first call to process_select
+			current_process=begin_queue;
+			return current_process->sp;
+		}
 		else {
 			//A process has just terminated
 			
@@ -85,7 +91,7 @@ unsigned int * process_select (unsigned int *cursp) {
 		current_process->sp=cursp;
 		//Remove the top process from the queue and add to end
 		struct process_state * switched_process = remove();
-		append(switched_process);
+		append(switched_process, current_process);
 		//Returns the new process sp
 		return current_process->sp;
 	}
