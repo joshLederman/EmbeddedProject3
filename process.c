@@ -5,6 +5,7 @@
 process_t * process_list = NULL;
 process_t * current_process = NULL;
 
+//Temp
 struct process_state {
 			unsigned int *sp;
 			struct process_state *nextProcess;
